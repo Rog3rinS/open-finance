@@ -19,6 +19,9 @@ Este repositório simula um ecossistema Open Finance com múltiplas APIs represe
 
 ```bash
 git clone https://github.com/seu-usuario/open-finance.git
+```
+
+```bash
 cd open-finance
 ```
 
