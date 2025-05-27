@@ -28,7 +28,7 @@ cd open-finance
 ### 2. Suba os containers com Docker Compose
 
 ```bash
-sudo docker compose up --build
+sudo docker compose up --build -d
 ```
 
 > ✅ As APIs estarão disponíveis em `http://localhost:<porta>` e você verá mensagens como:
