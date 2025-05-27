@@ -37,8 +37,6 @@ sudo docker compose up --build -d
 > API disponível em http://localhost:3004
 > ```
 
----
-
 ## 🧪 Migrations 
 
 Para rodar as migrations foi criado um script, entao use (talvez seja necessario voce dar permissoes para o script executar):
@@ -46,10 +44,6 @@ Para rodar as migrations foi criado um script, entao use (talvez seja necessario
 ```bash
 ./run-migrations.sh
 ```
-
-
-
----
 
 ## 🧹 Limpando
 
