@@ -39,14 +39,15 @@ sudo docker compose up --build -d
 
 ---
 
-## 🧪 Migrations (opcional)
+## 🧪 Migrations 
 
-Se algum container precisar rodar migrations manualmente, use:
+Para rodar as migrations foi criado um script, entao use (talvez seja necessario voce dar permissoes para o script executar):
 
 ```bash
-# Exemplo para bank-account-api
-sudo docker exec -it open-finance-emulator-bank-account-api-1 npx sequelize db:migrate
+./run-migrations.sh
 ```
+
+
 
 ---
 
