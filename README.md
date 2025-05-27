@@ -4,11 +4,11 @@ Este repositório simula um ecossistema Open Finance com múltiplas APIs represe
 
 ## 🧱 Estrutura dos Serviços
 
-- `bank-account-api` — API de contas bancárias (porta 3004)
-- `apibanco` — API de um banco fictício (porta 3001 ou configurável)
-- `bancocentral` — API do Banco Central fictício (porta 3003)
-- `api-minibc` — Mini API de integração com o Banco Central (porta 3002)
-- `mini-banco-central` — Banco Central reduzido (porta 3005)
+- `bank-account-api` — (porta 3004)
+- `apibanco` — (porta 3001)
+- `bancocentral` — (porta 3003)
+- `api-minibc` — (porta 3002)
+- `mini-banco-central` — (porta 3005)
 - `postgres` — Banco de dados para os serviços (porta 5433)
 
 ---
@@ -18,8 +18,8 @@ Este repositório simula um ecossistema Open Finance com múltiplas APIs represe
 ### 1. Clone o repositório
 
 ```bash
-git clone https://github.com/seu-usuario/open-finance-emulator.git
-cd open-finance-emulator
+git clone https://github.com/seu-usuario/open-finance.git
+cd open-finance
 ```
 
 ### 2. Suba os containers com Docker Compose
