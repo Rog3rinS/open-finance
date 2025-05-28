@@ -1,9 +1,9 @@
 import * as Yup from 'yup';
 import { Op } from "sequelize";
-import Transaction from '../models/transaction';
-import Account from '../models/account';
-import User from '../models/user';
-import Institution from '../models/institution';
+import Transaction from '../models/transaction.js';
+import Account from '../models/account.js';
+import User from '../models/user.js';
+import Institution from '../models/institution.js';
 
 class TransactionController {
 	async index(req, res) {
@@ -264,5 +264,5 @@ class TransactionController {
 		}
 	}
 }
- 
+
 export default new TransactionController();

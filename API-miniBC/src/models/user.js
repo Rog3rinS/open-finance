@@ -11,7 +11,7 @@ class User extends Model {
 			},
 			name: {
 				type: Sequelize.STRING,
-				allowNull: false, 
+				allowNull: false,
 			},
 			email: {
 				type: Sequelize.STRING,

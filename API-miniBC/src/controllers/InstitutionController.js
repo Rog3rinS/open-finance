@@ -1,4 +1,4 @@
-import Institution from '../models/institution';
+import Institution from '../models/institution.js';
 import * as Yup from 'yup';
 
 class InstitutionController {
@@ -19,7 +19,7 @@ class InstitutionController {
 		if (institutionExists) {
 			return res.status(400).json({ error: 'Instituicao ja existente.' });
 		}
- 
+
 		const institution = await Institution.create({
 			name: req.body.name.toLowerCase(),
 			type: req.body.type.toLowerCase(),

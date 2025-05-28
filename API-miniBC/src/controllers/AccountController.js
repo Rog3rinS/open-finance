@@ -1,6 +1,6 @@
 import * as Yup from 'yup';
-import Institution from '../models/institution';
-import Account from '../models/account';
+import Institution from '../models/institution.js';
+import Account from '../models/account.js';
 
 class AccountController {
 	async index(req, res) {
@@ -64,7 +64,7 @@ class AccountController {
 		if (accountExist) {
 			return res.status(400).json({ error: 'Conta ja existente' });
 		}
- 
+
 		const account = await Account.create({
 			cpf,
 			institution_id: institution.id,

@@ -1,6 +1,6 @@
 module.exports = {
   async up(queryInterface, Sequelize) {
-    return queryInterface.createTable("Users", {
+    return queryInterface.createTable("users", {
       cpf: {
         type: Sequelize.STRING,
         primaryKey: true,
@@ -27,6 +27,6 @@ module.exports = {
   },
 
   async down(queryInterface) {
-    return queryInterface.dropTable("Users")
+    return queryInterface.dropTable("users")
   }
 };
