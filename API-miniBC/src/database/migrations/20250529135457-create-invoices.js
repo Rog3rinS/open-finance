@@ -1,32 +1,33 @@
 module.exports = {
   async up(queryInterface, Sequelize) {
-    return queryInterface.createTable("transactions", {
+    return queryInterface.createTable("invoices", {
       id: {
         type: Sequelize.INTEGER,
         primaryKey: true,
         autoIncrement: true,
         allowNull: false,
       },
-      origin_account_id: {
+      account_id: {
         type: Sequelize.INTEGER,
         references: { model: "accounts", key: "id" },
         allowNull: true,
         onUpdate: "CASCADE",
         onDelete: "SET NULL",
       },
-      destination_account_id: {
-        type: Sequelize.INTEGER,
-        references: { model: "accounts", key: "id" },
-        allowNull: true,
-        onUpdate: "CASCADE",
-        onDelete: "SET NULL",
-      },
-      type: {
-        type: Sequelize.ENUM("deposito", "saque", "transferencia"),
+      status: {
+        type: Sequelize.ENUM("Vencida", "Paga", "Em aberto"),
         allowNull: false,
       },
       amount: {
         type: Sequelize.FLOAT,
+        allowNull: false,
+      },
+      description: {
+        type: Sequelize.TEXT,
+        allowNull: true,
+      },
+      due_date: {
+        type: Sequelize.DATE,
         allowNull: false,
       },
       institution_id: {
@@ -48,6 +49,6 @@ module.exports = {
   },
 
   async down(queryInterface) {
-    return queryInterface.dropTable("transactions");
+    return queryInterface.dropTable("invoices");
   },
 };
