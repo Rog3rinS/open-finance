@@ -4,7 +4,7 @@
   "main": "index.js",
   "license": "MIT",
   "scripts": {
-"migrate": "npx sequelize db:migrate",
+    "migrate": "npx sequelize db:migrate",
     "start": "nodemon src/server.js"
   },
   "dependencies": {
