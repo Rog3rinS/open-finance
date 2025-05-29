@@ -21,10 +21,10 @@ routes.post('/usuarios/:cpf/contas', AccountController.store); // rota para
 routes.get('/usuarios/:cpf/contas', AccountController.index);   // 
 
 //rotas de Transactions
-routes.post('/usuarios/:cpf/transacoes', TransactionController.store); // 
-routes.get('/usuarios/:cpf/extrato', TransactionController.index); //
+routes.post('/usuarios/:cpf/transacoes', TransactionController.store); 
+routes.get('/usuarios/:cpf/extrato', TransactionController.index); 
 
 //Balanço 
-routes.get('/usuarios/:cpf/saldo', UserController.getBalance); // 
+routes.get('/usuarios/:cpf/saldo', UserController.getBalance); 
 
 export default routes;
