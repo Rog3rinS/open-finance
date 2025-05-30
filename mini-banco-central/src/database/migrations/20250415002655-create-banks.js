@@ -1,52 +1,56 @@
 'use strict';
 
-/** @type {import('sequelize-cli').Migration} */
 module.exports = {
-  up: (queryInterface, Sequelize) => {
-    return queryInterface.createTable('banks', {
-      cnpj: {
-        type: Sequelize.STRING,
+  async up(queryInterface, Sequelize) {
+    await queryInterface.createTable('invoices', {
+      id: {
+        type: Sequelize.INTEGER,
         primaryKey: true,
-        allowNull: false,
-        unique: true,
-      },
-      name: {
-        type: Sequelize.STRING,
+        autoIncrement: true,
         allowNull: false,
       },
-      email: {
-        type: Sequelize.STRING,
-        allowNull: false,
-        unique: true,
-      },
-      phone: {
-        type: Sequelize.STRING,
-        allowNull: false,
-      },
-      address: {
-        type: Sequelize.STRING,
-        allowNull: false,
+      account_id: {
+        type: Sequelize.INTEGER,
+        references: { model: 'accounts', key: 'id' },
+        allowNull: true,
+        onUpdate: 'CASCADE',
+        onDelete: 'SET NULL',
       },
       status: {
-        type: Sequelize.BOOLEAN,
+        type: Sequelize.ENUM('Vencida', 'Paga', 'Em aberto'),
         allowNull: false,
-        defaultValue: true,
+      },
+      amount: {
+        type: Sequelize.FLOAT,
+        allowNull: false,
+      },
+      description: {
+        type: Sequelize.TEXT,
+        allowNull: true,
+      },
+      due_date: {
+        type: Sequelize.DATE,
+        allowNull: false,
+      },
+      cnpj: {                        // Referência à tabela banks.cnpj
+        type: Sequelize.STRING,
+        references: { model: 'banks', key: 'cnpj' },
+        allowNull: true,
+        onUpdate: 'CASCADE',
+        onDelete: 'SET NULL',
       },
       created_at: {
         type: Sequelize.DATE,
-        allowNull: false,
+        allowNull: true,
       },
       updated_at: {
         type: Sequelize.DATE,
-        allowNull: false,
+        allowNull: true,
       },
     });
   },
 
-  down: queryInterface => {
-    return queryInterface.dropTable('banks');
+  async down(queryInterface) {
+    await queryInterface.dropTable('invoices');
   },
 };
-
-
-

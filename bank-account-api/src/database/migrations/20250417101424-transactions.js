@@ -2,7 +2,7 @@
 
 /** @type {import('sequelize-cli').Migration} */
 export default {
-    async up (queryInterface, Sequelize) {
+    async up(queryInterface, Sequelize) {
         await queryInterface.createTable('transactions', {
             id: {
                 type: Sequelize.INTEGER,
@@ -21,7 +21,7 @@ export default {
             description: Sequelize.TEXT,
             account_id: {
                 type: Sequelize.INTEGER,
-                references: {model: 'accounts', key: 'id'},
+                references: { model: 'accounts', key: 'id' },
                 onUpdate: 'CASCADE',
                 onDelete: 'SET NULL',
                 allowNull: false
@@ -31,13 +31,13 @@ export default {
                 allowNull: false
             },
             updated_at: {
-                type:Sequelize.DATE,
-                allowNull:false
+                type: Sequelize.DATE,
+                allowNull: false
             }
         });
     },
 
-    async down (queryInterface) {
+    async down(queryInterface) {
         await queryInterface.dropTable('transactions');
     }
 };

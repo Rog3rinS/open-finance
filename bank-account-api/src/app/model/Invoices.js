@@ -45,8 +45,23 @@ class Invoice extends Model {
         );
 
         return this;
-        //ESSE CODIGO VAI PRECISAR FAZER O BELONGS TO PQ NAO TA FAZENDO NO INDEX.JS
     }
-};
+
+    static associate(models) {
+        this.belongsTo(models.Account, {
+            foreignKey: 'account_id',
+            as: 'account',
+            onDelete: 'SET NULL',
+            onUpdate: 'CASCADE',
+        });
+
+        this.belongsTo(models.Institution, {
+            foreignKey: 'institution_id',
+            as: 'institution',
+            onDelete: 'SET NULL',
+            onUpdate: 'CASCADE',
+        });
+    }
+}
 
 export default Invoice;

@@ -1,6 +1,9 @@
-module.exports = {
+'use strict';
+
+/** @type {import('sequelize-cli').Migration} */
+export default {
     async up(queryInterface, Sequelize) {
-        return queryInterface.createTable("invoices", {
+        await queryInterface.createTable('invoices', {
             id: {
                 type: Sequelize.INTEGER,
                 primaryKey: true,
@@ -9,13 +12,13 @@ module.exports = {
             },
             account_id: {
                 type: Sequelize.INTEGER,
-                references: { model: "accounts", key: "id" },
+                references: { model: 'accounts', key: 'id' },
                 allowNull: true,
-                onUpdate: "CASCADE",
-                onDelete: "SET NULL",
+                onUpdate: 'CASCADE',
+                onDelete: 'SET NULL',
             },
             status: {
-                type: Sequelize.ENUM("Vencida", "Paga", "Em aberto"),
+                type: Sequelize.ENUM('Vencida', 'Paga', 'Em aberto'),
                 allowNull: false,
             },
             amount: {
@@ -32,10 +35,10 @@ module.exports = {
             },
             institution_id: {
                 type: Sequelize.INTEGER,
-                references: { model: "institutions", key: "id" },
+                references: { model: 'institutions', key: 'id' },
                 allowNull: true,
-                onUpdate: "CASCADE",
-                onDelete: "SET NULL",
+                onUpdate: 'CASCADE',
+                onDelete: 'SET NULL',
             },
             created_at: {
                 type: Sequelize.DATE,
@@ -49,6 +52,6 @@ module.exports = {
     },
 
     async down(queryInterface) {
-        return queryInterface.dropTable("invoices");
+        await queryInterface.dropTable('invoices');
     },
 };

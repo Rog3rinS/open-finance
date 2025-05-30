@@ -31,8 +31,8 @@ class Invoice extends Model {
           type: Sequelize.DATE,
           allowNull: false,
         },
-        institution_id: {
-          type: Sequelize.INTEGER,
+        cnpj: {           // Essa coluna é a FK para banco
+          type: Sequelize.STRING,
           allowNull: true,
         },
       },
@@ -45,8 +45,12 @@ class Invoice extends Model {
     );
 
     return this;
-    //ESSE CODIGO VAI PRECISAR FAZER O BELONGS TO PQ NAO TA FAZENDO NO INDEX.JS 
   }
-};
+
+  static associate(models) {
+    this.belongsTo(models.Account, { foreignKey: 'account_id', as: 'account' });
+    this.belongsTo(models.Bank, { foreignKey: 'cnpj', as: 'bank' }); // Relacionamento com Bank via cnpj
+  }
+}
 
 export default Invoice;
