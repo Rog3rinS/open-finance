@@ -66,6 +66,7 @@ class InvoicesController {
 			return res.status(500).json({ error: 'Erro interno do servidor ao tentar criar a fatura.' });
 		}
 	}
+
 }
 
 export default new InvoicesController();
