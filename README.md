@@ -4,10 +4,9 @@ Este repositório simula um ecossistema Open Finance com múltiplas APIs represe
 
 ## 🧱 Estrutura dos Serviços
 
-- `bank-account-api` — (porta 3004)
-- `apibanco` — (porta 3001)
-- `bancocentral` — (porta 3003)
 - `api-minibc` — (porta 3002)
+- `bancocentral` — (porta 3003)
+- `bank-account-api` — (porta 3004)
 - `mini-banco-central` — (porta 3005)
 - `postgres` — Banco de dados para os serviços (porta 5433)
 
