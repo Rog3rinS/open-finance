@@ -14,7 +14,7 @@ services:
       - ./data/init.sql:/docker-entrypoint-initdb.d/init.sql:ro
 
   api-minibc:
-    build: ./API-miniBC
+    build: ./APImini-BC/
     image: openfinance-api-minibc
     ports:
       - "3002:3002"
