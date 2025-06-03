@@ -1,25 +1,29 @@
 import Sequelize from 'sequelize';
-import databaseConfig from '../config/database';
+import databaseConfig from '../config/database'
 
-import Institution from '../app/models/Institution.js';
-import User from '../app/models/User.js';
+import User from '../app/models/User.js'
+import Bank from '../app/models/Bank.js';
 import Account from '../app/models/Account.js';
 import Transaction from '../app/models/Transaction.js';
+import Invoices from '../app/models/Invoices.js';
 
-const models = [Institution, User, Account, Transaction];
+const models = [Bank, User, Account, Transaction, Invoices];
 
 class Database {
-	constructor() {
-		this.init();
-	}
+    constructor() {
+        this.init();
+    }
+    init() {
+        this.connection = new Sequelize(databaseConfig);
 
-	init() {
-		this.connection = new Sequelize(databaseConfig); //this will take our postgres connection config and sequlize it
+        models.forEach(model => model.init(this.connection));
 
-		models.map(model => model.init(this.connection));
-		models.map(model => model.associate && model.associate(this.connection.models));
-	}
+        models.forEach(model => {
+            if (model.associate) {
+                model.associate(this.connection.models);
+            }
+        });
+    }
 
 }
-
 export default new Database();

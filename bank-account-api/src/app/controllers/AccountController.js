@@ -1,44 +1,103 @@
-import AccountUseCase from '../usecases/AccountUseCase.js';
+import * as Yup from 'yup';
+import Account from '../models/Account';
+import Bank from '../models/Bank';
+import User from '../models/User';
 
 class AccountController {
-    async index(request, response){
-        const accounts = AccountUseCase.findAll();
 
-        return response.send(accounts);
+  async store(req, res) {
+    const schema = Yup.object().shape({
+      type: Yup.string().required('Tipo da conta é obrigatório'),
+      balance: Yup.number().required('Saldo inicial é obrigatório'),
+      bank_cnpj: Yup.string().required('CNPJ do banco é obrigatório'),
+    });
+
+    if (!(await schema.isValid(req.body))) {
+      return res.status(400).json({ error: 'Falha na validação dos dados' });
     }
 
-    async store(request, response){
-        try{
-            const { id: user_id } = request.params;
-            const {institution_id, balance} = request.body;
+    const { bank_cnpj, type, balance } = req.body;
+    const user_cpf = req.userCpf;
 
-            const accountSaved = await AccountUseCase.save({
-                user_id,
-                institution_id,
-                balance
-            });
+    const bank = await Bank.findByPk(bank_cnpj);
+    const user = await User.findByPk(user_cpf);
 
-            return response.send(accountSaved);
-        }catch(error){
-            return response.status(400).json({ error: error.message});
-        }
-
+    if (!bank) {
+      return res.status(404).json({ error: 'Banco não encontrado' });
     }
 
-    async show(request, response){
-        const { id: user_id } = request.params;
-
-        try{
-
-            const accounts = await AccountUseCase.findById(user_id);
-
-            return response.send(accounts);
-
-        }catch(error){
-            return response.status(400).json({ error: error.message});
-        }
-
+    if (!user) {
+      return res.status(404).json({ error: 'Usuário não encontrado' });
     }
+
+    const account = await Account.create({
+      type,
+      balance,
+      bank_cnpj,
+      user_cpf,
+    });
+
+    return res.status(201).json(account);
+  }
+
+
+  async index(req, res) {
+    const user_cpf = req.userCpf;
+
+    const accounts = await Account.findAll({
+      where: { user_cpf },
+      include: [
+        {
+          model: Bank,
+          as: 'bank',
+          attributes: ['name', 'cnpj'],
+        },
+      ],
+    });
+
+    return res.json(accounts);
+  }
+
+
+  async update(req, res) {
+    const { id } = req.params;
+    const user_cpf = req.userCpf;
+
+    const schema = Yup.object().shape({
+      type: Yup.string(),
+      balance: Yup.number(),
+    });
+
+    if (!(await schema.isValid(req.body))) {
+      return res.status(400).json({ error: 'Falha na validação dos dados' });
+    }
+
+    const account = await Account.findOne({ where: { id, user_cpf } });
+
+    if (!account) {
+      return res.status(404).json({ error: 'Conta não encontrada' });
+    }
+
+    await account.update(req.body);
+
+    return res.json(account);
+  }
+
+
+  async delete(req, res) {
+    const { id } = req.params;
+    const user_cpf = req.userCpf;
+
+    const account = await Account.findOne({ where: { id, user_cpf } });
+
+    if (!account) {
+      return res.status(404).json({ error: 'Conta não encontrada' });
+    }
+
+    await account.destroy();
+
+    return res.status(204).send();
+  }
 }
 
 export default new AccountController();

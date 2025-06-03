@@ -3,7 +3,6 @@
   "version": "1.0.0",
   "description": "Atividade \"API Agregadora de Contas Bancárias (Mini Banco Central)\" do estágio na Compass UOL.",
   "main": "index.js",
-  "type": "module",
   "scripts": {
     "migrate": "npx sequelize db:migrate",
     "test": "echo \"Error: no test specified\" && exit 1",
@@ -24,6 +23,7 @@
   },
   "homepage": "https://github.com/Ana72Lu/bank-account-api#readme",
   "dependencies": {
+    "cors": "^2.8.5",
     "bcryptjs": "^3.0.2",
     "dotenv": "^16.5.0",
     "express": "^5.1.0",
