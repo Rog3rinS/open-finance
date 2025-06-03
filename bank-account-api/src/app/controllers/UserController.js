@@ -1,73 +1,105 @@
-import UserUseCase from '../usecases/UserUseCase.js';
+import * as Yup from 'yup';
+import User from '../models/User.js';
+import { Op } from 'sequelize';
 
-class UserController{
+class UserController {
+    async store(req, res) {
+        const schema = Yup.object().shape({
+            cpf: Yup.string().required('CPF é obrigatório'),
+            name: Yup.string().required('Nome é obrigatório'),
+            email: Yup.string().email('E-mail inválido').required('E-mail é obrigatório'),
+            password: Yup.string()
+                .required('Senha é obrigatória')
+                .min(6, 'A senha deve ter no mínimo 6 caracteres'),
+        });
 
-    async index(request, response){
-        const users = await UserUseCase.findAll();
-
-        return response.send(users);
-    }
-    async store(request, response){
-        const body = request.body;
-        const userSaved = await UserUseCase.save(body);
-        return response.send(userSaved);
-    }
-
-    async update(request, response){
-        const { id } = request.params;
-        const {name, email, cpf} = request.body;
-
-        const userUpdatedOrError = await UserUseCase.replace({id, name, email, cpf});
-        return response.send(userUpdatedOrError);
-    }
-
-    async show(request, response){
-        const { id } = request.params;
-        const { institution } = request.query;
-
-        try{
-
-            if(!institution){
-                const data = await UserUseCase.totalBalance(id, institution);
-                return response.send(data);
-            }
-
-            const data = await UserUseCase.totalBalanceByInstitution(id, institution);
-            return response.send(data);
-
-        }catch(error){
-            return response.status(400).json({error: error.message});
+        if (!(await schema.isValid(req.body))) {
+            return res.status(400).json({ error: 'Falha na validação' });
         }
+
+        const { cpf, email } = req.body;
+
+        const userExists = await User.findOne({
+            where: {
+                [Op.or]: [{ cpf }, { email }],
+            },
+        });
+
+        if (userExists) {
+            return res.status(400).json({ error: 'CPF ou E-mail já está em uso.' });
+        }
+
+        const { name } = await User.create(req.body);
+
+        return res.status(201).json({ cpf, name, email });
     }
 
-    async showStatement(request, response){
-        const { id } = request.params;
-        const { institution } = request.query;
-        const { type } = request.query;
+    async update(req, res) {
+        const schema = Yup.object().shape({
+            name: Yup.string(),
+            email: Yup.string().email('E-mail inválido'),
+            oldPassword: Yup.string().min(6, 'A senha antiga deve ter no mínimo 6 caracteres'),
+            password: Yup.string()
+                .min(6, 'A nova senha deve ter no mínimo 6 caracteres')
+                .when('oldPassword', (oldPassword, field) =>
+                    oldPassword ? field.required('Nova senha obrigatória') : field
+                ),
+            confirmPassword: Yup.string().when('password', (password, field) =>
+                password ? field.required('Confirmação obrigatória').oneOf([Yup.ref('password')], 'As senhas não coincidem') : field
+            ),
+        });
 
-        try{
-
-            if(!institution && !type){
-                const transactions = await UserUseCase.findTransactions(id);
-                return response.send(transactions);
-            }
-
-            if(!type && institution){
-                const transactions = await UserUseCase.findTransactionsByInstitution(id, institution);
-                return response.send(transactions);
-            }
-
-            if(type && !institution){
-                const transactions = await UserUseCase.findTransactionsByType(id, type);
-                return response.send(transactions);
-            }
-
-            const transactions = await UserUseCase.findTransactionsByInstitutionAndType(id, institution, type);
-            return response.send(transactions);
-
-        }catch(error){
-            return response.status(400).json({error: error.message});
+        if (!(await schema.isValid(req.body))) {
+            return res.status(400).json({ error: 'Falha na validação' });
         }
+
+        const user = await User.findByPk(req.userCpf);
+
+        if (!user) {
+            return res.status(404).json({ error: 'Usuário não encontrado' });
+        }
+
+        if (req.body.email && req.body.email !== user.email) {
+            const userExists = await User.findOne({ where: { email: req.body.email } });
+
+            if (userExists) {
+                return res.status(400).json({ error: 'E-mail já está em uso.' });
+            }
+        }
+
+        if (req.body.oldPassword && !(await user.checkPassword(req.body.oldPassword))) {
+            return res.status(401).json({ error: 'Senha antiga incorreta' });
+        }
+
+        await user.update(req.body);
+
+        const { cpf, name, email } = user;
+
+        return res.json({ cpf, name, email });
+    }
+
+    async index(req, res) {
+        const user = await User.findByPk(req.userCpf);
+
+        if (!user) {
+            return res.status(404).json({ error: 'Usuário não encontrado' });
+        }
+
+        return res.json(user);
+    }
+
+    async delete(req, res) {
+        const cpf = req.userCpf;
+
+        const user = await User.findByPk(cpf);
+
+        if (!user) {
+            return res.status(404).json({ error: 'Usuário não encontrado' });
+        }
+
+        await user.destroy();
+
+        return res.status(200).json({ message: 'Usuário deletado com sucesso' });
     }
 }
 

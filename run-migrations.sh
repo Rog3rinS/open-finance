@@ -20,8 +20,4 @@ sudo docker exec -it open-finance-bancocentral-1 npx sequelize db:migrate
 echo "🔹 Rodando migrations: api-minibc"
 sudo docker exec -it open-finance-api-minibc-1 npx sequelize db:migrate
 
-# apibanco (usando o binário direto)
-echo "🔹 Rodando migrations: apibanco (com binário local)"
-sudo docker exec -it open-finance-apibanco-1 npx sequelize db:migrate
-
 echo "✅ Todas as migrations foram executadas com sucesso!"

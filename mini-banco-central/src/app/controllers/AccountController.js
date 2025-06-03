@@ -4,11 +4,9 @@ import Bank from '../models/Bank';
 import User from '../models/User';
 
 class AccountController {
-  
+
   async store(req, res) {
     const schema = Yup.object().shape({
-      number: Yup.string().required('Número da conta é obrigatório'),
-      agency: Yup.string().required('Agência é obrigatória'),
       type: Yup.string().required('Tipo da conta é obrigatório'),
       balance: Yup.number().required('Saldo inicial é obrigatório'),
       bank_cnpj: Yup.string().required('CNPJ do banco é obrigatório'),
@@ -18,7 +16,7 @@ class AccountController {
       return res.status(400).json({ error: 'Falha na validação dos dados' });
     }
 
-    const { bank_cnpj, number, agency, type, balance } = req.body;
+    const { bank_cnpj, type, balance } = req.body;
     const user_cpf = req.userCpf;
 
     const bank = await Bank.findByPk(bank_cnpj);
@@ -33,8 +31,6 @@ class AccountController {
     }
 
     const account = await Account.create({
-      number,
-      agency,
       type,
       balance,
       bank_cnpj,
@@ -44,7 +40,7 @@ class AccountController {
     return res.status(201).json(account);
   }
 
-  
+
   async index(req, res) {
     const user_cpf = req.userCpf;
 
@@ -62,14 +58,12 @@ class AccountController {
     return res.json(accounts);
   }
 
-  
+
   async update(req, res) {
     const { id } = req.params;
     const user_cpf = req.userCpf;
 
     const schema = Yup.object().shape({
-      number: Yup.string(),
-      agency: Yup.string(),
       type: Yup.string(),
       balance: Yup.number(),
     });
@@ -107,4 +101,3 @@ class AccountController {
 }
 
 export default new AccountController();
-

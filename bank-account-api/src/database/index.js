@@ -1,25 +1,29 @@
-import { Sequelize } from 'sequelize';
+import Sequelize from 'sequelize';
+import databaseConfig from '../config/database'
 
-import database from '../config/database.js';
-import Account from '../app/model/Account.js';
-import Institution from '../app/model/Institution.js';
-import Transaction from '../app/model/Transaction.js';
-import User from '../app/model/User.js';
+import User from '../app/models/User.js'
+import Bank from '../app/models/Bank.js';
+import Account from '../app/models/Account.js';
+import Transaction from '../app/models/Transaction.js';
+import Invoices from '../app/models/Invoices.js';
 
-const models = [Account, Institution, Transaction, User];
+const models = [Bank, User, Account, Transaction, Invoices];
 
 class Database {
     constructor() {
         this.init();
     }
-
     init() {
-        this.connection = new Sequelize(database);
+        this.connection = new Sequelize(databaseConfig);
 
-        models
-            .map(model => model.init(this.connection))
-            .map(model => model.associate && model.associate(this.connection.models));
+        models.forEach(model => model.init(this.connection));
+
+        models.forEach(model => {
+            if (model.associate) {
+                model.associate(this.connection.models);
+            }
+        });
     }
-}
 
+}
 export default new Database();

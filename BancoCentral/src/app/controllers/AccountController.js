@@ -1,79 +1,103 @@
 import * as Yup from 'yup';
-import Institution from '../models/Institution';
 import Account from '../models/Account';
+import Bank from '../models/Bank';
+import User from '../models/User';
 
 class AccountController {
-	async index(req, res) {
-		const institution = req.query.instituicao;
 
-		if (!institution) {
-			return res.status(400).json({ error: 'Parametro "?instituicao=" e obrigatorio.' });
-		}
+  async store(req, res) {
+    const schema = Yup.object().shape({
+      type: Yup.string().required('Tipo da conta é obrigatório'),
+      balance: Yup.number().required('Saldo inicial é obrigatório'),
+      bank_cnpj: Yup.string().required('CNPJ do banco é obrigatório'),
+    });
 
-		const instituicao = await Institution.findOne({
-			where: { name: req.query.instituicao },
-		});
+    if (!(await schema.isValid(req.body))) {
+      return res.status(400).json({ error: 'Falha na validação dos dados' });
+    }
 
-		if (!instituicao) {
-			return res.status(400).json({ error: 'Instituicao nao encontrada.' });
-		}
-		const account = await Account.findAll({
-			where: {
-				cpf: req.params.cpf,
-				institution_id: instituicao.id,
-			}
-		})
+    const { bank_cnpj, type, balance } = req.body;
+    const user_cpf = req.userCpf;
 
-		if (account.length === 0) {
-			return res.status(400).json({ error: 'Conta não existe.' });
-		}
+    const bank = await Bank.findByPk(bank_cnpj);
+    const user = await User.findByPk(user_cpf);
 
-		return res.json(account);
-	}
+    if (!bank) {
+      return res.status(404).json({ error: 'Banco não encontrado' });
+    }
 
-	async store(req, res) {
-		const schema = Yup.object().shape({
-			institution_name: Yup.string().required(),
-			type: Yup.string().required(),
-		});
+    if (!user) {
+      return res.status(404).json({ error: 'Usuário não encontrado' });
+    }
 
-		const cpf = req.params.cpf;
+    const account = await Account.create({
+      type,
+      balance,
+      bank_cnpj,
+      user_cpf,
+    });
 
-		if (!(await schema.isValid(req.body))) {
-			return res.status(400).json({ error: 'Falha na validação.' });
-		}
+    return res.status(201).json(account);
+  }
 
-		const { institution_name, type } = req.body;
 
-		// Check to find the institution
-		const institution = await Institution.findOne({
-			where: { name: institution_name.toLowerCase() },
-		});
+  async index(req, res) {
+    const user_cpf = req.userCpf;
 
-		if (!institution) {
-			return res.status(400).json({ error: 'Instituicao nao encontrada.' });
-		}
+    const accounts = await Account.findAll({
+      where: { user_cpf },
+      include: [
+        {
+          model: Bank,
+          as: 'bank',
+          attributes: ['name', 'cnpj'],
+        },
+      ],
+    });
 
-		const accountExist = await Account.findOne({
-			where: {
-				cpf,
-				institution_id: institution.id,
-			},
-		});
+    return res.json(accounts);
+  }
 
-		if (accountExist) {
-			return res.status(400).json({ error: 'Essa conta ja existe!' });
-		}
 
-		const account = await Account.create({
-			cpf,
-			institution_id: institution.id,
-			type,
-			balance: 0,
-		});
+  async update(req, res) {
+    const { id } = req.params;
+    const user_cpf = req.userCpf;
 
-		return res.status(201).json(account);
-	}
+    const schema = Yup.object().shape({
+      type: Yup.string(),
+      balance: Yup.number(),
+    });
+
+    if (!(await schema.isValid(req.body))) {
+      return res.status(400).json({ error: 'Falha na validação dos dados' });
+    }
+
+    const account = await Account.findOne({ where: { id, user_cpf } });
+
+    if (!account) {
+      return res.status(404).json({ error: 'Conta não encontrada' });
+    }
+
+    await account.update(req.body);
+
+    return res.json(account);
+  }
+
+
+  async delete(req, res) {
+    const { id } = req.params;
+    const user_cpf = req.userCpf;
+
+    const account = await Account.findOne({ where: { id, user_cpf } });
+
+    if (!account) {
+      return res.status(404).json({ error: 'Conta não encontrada' });
+    }
+
+    await account.destroy();
+
+    return res.status(204).send();
+  }
 }
 
 export default new AccountController();

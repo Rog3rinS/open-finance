@@ -1,10 +1,11 @@
 import * as Yup from 'yup';
-import User from '../models/User';
+import User from '../models/User.js';
+import { Op } from 'sequelize';
 
 class UserController {
     async store(req, res) {
         const schema = Yup.object().shape({
-            cpf: Yup.string().required('CPF é obrigatório'),  
+            cpf: Yup.string().required('CPF é obrigatório'),
             name: Yup.string().required('Nome é obrigatório'),
             email: Yup.string().email('E-mail inválido').required('E-mail é obrigatório'),
             password: Yup.string()
@@ -16,39 +17,35 @@ class UserController {
             return res.status(400).json({ error: 'Falha na validação' });
         }
 
-        const userExistsByCpf = await User.findOne({ where: { cpf: req.body.cpf } });
-        if (userExistsByCpf) {
-            return res.status(400).json({ error: 'CPF já está em uso.' });
-        }
+        const { cpf, email } = req.body;
 
-        const userExistsByEmail = await User.findOne({ where: { email: req.body.email } });
-        if (userExistsByEmail) {
-            return res.status(400).json({ error: 'E-mail já está em uso.' });
-        }
-
-        
-        const { cpf, name, email } = await User.create(req.body);
-
-        return res.json({
-            cpf,
-            name,
-            email,
+        const userExists = await User.findOne({
+            where: {
+                [Op.or]: [{ cpf }, { email }],
+            },
         });
+
+        if (userExists) {
+            return res.status(400).json({ error: 'CPF ou E-mail já está em uso.' });
+        }
+
+        const { name } = await User.create(req.body);
+
+        return res.status(201).json({ cpf, name, email });
     }
 
     async update(req, res) {
         const schema = Yup.object().shape({
-            cpf: Yup.string(),
             name: Yup.string(),
             email: Yup.string().email('E-mail inválido'),
             oldPassword: Yup.string().min(6, 'A senha antiga deve ter no mínimo 6 caracteres'),
             password: Yup.string()
                 .min(6, 'A nova senha deve ter no mínimo 6 caracteres')
                 .when('oldPassword', (oldPassword, field) =>
-                    oldPassword ? field.required() : field
+                    oldPassword ? field.required('Nova senha obrigatória') : field
                 ),
             confirmPassword: Yup.string().when('password', (password, field) =>
-                password ? field.required().oneOf([Yup.ref('password')], 'As senhas não coincidem') : field
+                password ? field.required('Confirmação obrigatória').oneOf([Yup.ref('password')], 'As senhas não coincidem') : field
             ),
         });
 
@@ -56,64 +53,54 @@ class UserController {
             return res.status(400).json({ error: 'Falha na validação' });
         }
 
-        const { email, oldPassword } = req.body;
-
         const user = await User.findByPk(req.userCpf);
-        if (email !== user.email) {
-            const userExists = await User.findOne({
-                where: { email },
-            });
+
+        if (!user) {
+            return res.status(404).json({ error: 'Usuário não encontrado' });
+        }
+
+        if (req.body.email && req.body.email !== user.email) {
+            const userExists = await User.findOne({ where: { email: req.body.email } });
+
             if (userExists) {
                 return res.status(400).json({ error: 'E-mail já está em uso.' });
             }
         }
 
-        if (oldPassword && !(await user.checkPassword(oldPassword))) {
-            return res.status(401).json({ error: 'Senha incorreta' });
+        if (req.body.oldPassword && !(await user.checkPassword(req.body.oldPassword))) {
+            return res.status(401).json({ error: 'Senha antiga incorreta' });
         }
 
-        const { cpf, name } = await user.update(req.body);
+        await user.update(req.body);
 
-        return res.json({
-            cpf,
-            name,
-            email,
-        });
+        const { cpf, name, email } = user;
+
+        return res.json({ cpf, name, email });
     }
 
-    async index(req, res){
-        const users = await User.findAll({
-            where: { cpf: req.userCpf },
-        });
-        return res.json(users);
+    async index(req, res) {
+        const user = await User.findByPk(req.userCpf);
+
+        if (!user) {
+            return res.status(404).json({ error: 'Usuário não encontrado' });
+        }
+
+        return res.json(user);
     }
 
     async delete(req, res) {
-        const { user_cpf } = req.params;
-    
-        const schema = Yup.object().shape({
-            user_cpf: Yup.string().required('CPF é obrigatório')
-        });
-    
-        if (!(await schema.isValid({ user_cpf }))) {
-            return res.status(400).json({ error: 'Falha na validação' });
-        }
-    
-        const user = await User.findOne({ where: { cpf: user_cpf } });
-    
+        const cpf = req.userCpf;
+
+        const user = await User.findByPk(cpf);
+
         if (!user) {
-            return res.status(400).json({ error: 'Usuário não existe ou CPF incorreto' });
+            return res.status(404).json({ error: 'Usuário não encontrado' });
         }
-    
-        if (user_cpf !== req.userCpf) {
-            return res.status(401).json({ error: 'Requisição não autorizada' });
-        }
-    
+
         await user.destroy();
-    
+
         return res.status(200).json({ message: 'Usuário deletado com sucesso' });
     }
-    
 }
 
 export default new UserController();
