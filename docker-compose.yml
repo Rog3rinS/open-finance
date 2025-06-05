@@ -20,6 +20,8 @@ services:
       - "3002:3002"
     depends_on:
       - db
+    env_file:
+      - ./APImini-BC/.env
     environment:
       PORT: 3002
       DB_HOST: db
@@ -35,6 +37,8 @@ services:
       - "3003:3003"
     depends_on:
       - db
+    env_file:
+      - ./BancoCentral/.env
     environment:
       PORT: 3003
       DB_HOST: db
@@ -50,6 +54,8 @@ services:
       - "3004:3004"
     depends_on:
       - db
+    env_file:
+      - ./bank-account-api/.env
     environment:
       PORT: 3004
       DB_HOST: db
@@ -65,6 +71,8 @@ services:
       - "3005:3005"
     depends_on:
       - db
+    env_file:
+      - ./bank-account-api/.env
     environment:
       PORT: 3005
       DB_HOST: db
@@ -72,3 +80,8 @@ services:
       DB_USER: postgres
       DB_PASS: admin
       DB_NAME: mini_banco_central_db
+
+networks:
+  default:
+    external:
+      name: openfinance-net
