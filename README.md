@@ -26,6 +26,17 @@ cd open-finance
 
 ### 2. Suba os containers com Docker Compose
 
+Crie a network local (Nao precisa estar no diretorio correto para criar a network, o docker e global, e as networks tambem)
+```bash
+sudo docker network create openfinance-net
+```
+
+Verifique se a network local esta criada/funcionando
+```bash
+sudo docker network inspect openfinance-net
+```
+
+Suba o docker (Esteja no diretorio correto antes de rodar =open-finance)
 ```bash
 sudo docker compose up --build -d
 ```
