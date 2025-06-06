@@ -1,17 +1,17 @@
-import { Sequelize } from 'sequelize';
-import databaseConfig from './databaseConfig.js';
+require('dotenv').config();
 
-const sequelize = new Sequelize(
-  databaseConfig.database,
-  databaseConfig.username,
-  databaseConfig.password,
-  {
-    host: databaseConfig.host,
-    port: Number(databaseConfig.port),
-    dialect: databaseConfig.dialect,
-    define: databaseConfig.define,
-    logging: false,
-  }
-);
-
-export default sequelize;
+module.exports = {
+  development: {
+    dialect: process.env.DB_DIALECT || 'postgres',
+    host: process.env.DB_HOST || 'localhost',
+    port: process.env.DB_PORT || 5432,
+    username: process.env.DB_USER || 'postgres',
+    password: process.env.DB_PASS || 'admin',
+    database: process.env.DB_NAME || 'bancocentral_db',
+    define: {
+      timestamps: true,
+      underscored: true,
+      underscoredAll: true,
+    },
+  },
+};

@@ -1,28 +1,28 @@
 import jwt from 'jsonwebtoken';
-import User from '../models/User';
+import User from '../models/User.js';
 
-import authConfig from '../../config/auth';
+import authConfig from '../../config/auth.js';
 
-class SessionController{
-    async store(req, res){
+class SessionController {
+    async store(req, res) {
         const { email, password } = req.body;
 
-        const user = await User.findOne({where:{ email }});
+        const user = await User.findOne({ where: { email } });
 
-        if(!user){
-            return res.status(401).json({ error: 'Usuário não existe'});
+        if (!user) {
+            return res.status(401).json({ error: 'Usuário não existe' });
         }
 
-        if(!(await user.checkPassword(password))){
-            return res.status(401).json({error: 'senha incorreta'});
+        if (!(await user.checkPassword(password))) {
+            return res.status(401).json({ error: 'senha incorreta' });
         }
 
         const { cpf, name } = user;
 
         return res.json({
             user: {
-                cpf, 
-                name, 
+                cpf,
+                name,
                 email,
             },
             token: jwt.sign({ cpf }, authConfig.secret, {

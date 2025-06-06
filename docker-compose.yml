@@ -72,3 +72,8 @@ services:
       DB_USER: postgres
       DB_PASS: admin
       DB_NAME: mini_banco_central_db
+
+networks:
+  default:
+    external:
+      name: openfinance-net

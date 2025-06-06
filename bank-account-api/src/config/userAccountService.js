@@ -1,6 +1,6 @@
 import User from '../app/models/User.js';
 import Account from '../app/models/Account.js';
-import sequelize from '../config/database.js';
+import sequelize from '../database/index.js';
 import { getDefaultBankCnpj } from '../config/initBank.js';
 
 export async function createUserWithAccount(userData, bankCnpj) {
