@@ -1,6 +1,9 @@
 import * as Yup from 'yup';
-import User from '../models/User.js';
 import { Op } from 'sequelize';
+
+import User from '../models/User.js';
+import { createUserWithAccount } from '../../config/userAccountService.js';
+import { getDefaultBankCnpj } from '../../config/initBank.js';
 
 class UserController {
     async store(req, res) {
@@ -29,9 +32,16 @@ class UserController {
             return res.status(400).json({ error: 'CPF ou E-mail já está em uso.' });
         }
 
-        const { name } = await User.create(req.body);
+        try {
+            const bankCnpj = getDefaultBankCnpj();
+            const { user } = await createUserWithAccount(req.body, bankCnpj);
 
-        return res.status(201).json({ cpf, name, email });
+            const { name } = user;
+            return res.status(201).json({ cpf, name, email });
+        } catch (err) {
+            console.error('[UserController][store] Erro ao criar usuário e conta:', err);
+            return res.status(500).json({ error: 'Erro interno ao criar usuário.' });
+        }
     }
 
     async update(req, res) {
@@ -45,7 +55,11 @@ class UserController {
                     oldPassword ? field.required('Nova senha obrigatória') : field
                 ),
             confirmPassword: Yup.string().when('password', (password, field) =>
-                password ? field.required('Confirmação obrigatória').oneOf([Yup.ref('password')], 'As senhas não coincidem') : field
+                password
+                    ? field
+                        .required('Confirmação obrigatória')
+                        .oneOf([Yup.ref('password')], 'As senhas não coincidem')
+                    : field
             ),
         });
 

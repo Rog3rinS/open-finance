@@ -1,7 +1,7 @@
 import * as Yup from 'yup';
-import Account from '../models/Account';
-import Bank from '../models/Bank';
-import User from '../models/User';
+import Account from '../models/Account.js';
+import Bank from '../models/Bank.js';
+import User from '../models/User.js';
 
 class AccountController {
 

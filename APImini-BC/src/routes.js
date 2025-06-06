@@ -4,17 +4,10 @@ import authMiddlewares from './app/middlewares/auth.js';
 
 import UserController from './app/controllers/UserController.js';
 import SessionController from './app/controllers/SessionController.js';
-import BankController from './app/controllers/BankController.js';
 import AccountController from './app/controllers/AccountController.js';
 import TransactionController from './app/controllers/TransactionController.js';
 
 const routes = new Router();
-
-//ROTAS PARA CRIAR O BANCO
-routes.post('/banks', BankController.store);
-routes.put('/banks/:cnpj', BankController.update);
-routes.get('/banks', BankController.index);
-routes.delete('/banks/:cnpj', BankController.delete);
 
 // ROTAS PÚBLICAS (não precisam de token)
 routes.post('/users', UserController.store);

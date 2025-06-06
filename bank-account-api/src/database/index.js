@@ -1,7 +1,7 @@
 import Sequelize from 'sequelize';
-import databaseConfig from '../config/database'
+import databaseConfig from '../config/databaseConfig.js';
 
-import User from '../app/models/User.js'
+import User from '../app/models/User.js';
 import Bank from '../app/models/Bank.js';
 import Account from '../app/models/Account.js';
 import Transaction from '../app/models/Transaction.js';
@@ -14,7 +14,18 @@ class Database {
         this.init();
     }
     init() {
-        this.connection = new Sequelize(databaseConfig);
+        this.connection = new Sequelize(
+            databaseConfig.database,
+            databaseConfig.username,
+            databaseConfig.password,
+            {
+                host: databaseConfig.host,
+                port: Number(databaseConfig.port),
+                dialect: databaseConfig.dialect,
+                define: databaseConfig.define,
+                logging: false,
+            }
+        );
 
         models.forEach(model => model.init(this.connection));
 
@@ -24,6 +35,6 @@ class Database {
             }
         });
     }
-
 }
+
 export default new Database();
