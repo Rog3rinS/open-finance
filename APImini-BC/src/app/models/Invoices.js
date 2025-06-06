@@ -31,7 +31,7 @@ class Invoice extends Model {
           type: Sequelize.DATE,
           allowNull: false,
         },
-        cnpj: {           // Essa coluna é a FK para banco
+        institution_cnpj: {           // Essa coluna é a FK para banco
           type: Sequelize.STRING,
           allowNull: true,
         },
@@ -49,7 +49,7 @@ class Invoice extends Model {
 
   static associate(models) {
     this.belongsTo(models.Account, { foreignKey: 'account_id', as: 'account' });
-    this.belongsTo(models.Bank, { foreignKey: 'cnpj', as: 'bank' }); // Relacionamento com Bank via cnpj
+    this.belongsTo(models.Bank, { foreignKey: 'institution_cnpj', as: 'bank' }); // Relacionamento com Bank via cnpj
   }
 }
 

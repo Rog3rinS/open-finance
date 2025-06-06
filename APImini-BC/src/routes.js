@@ -6,6 +6,7 @@ import UserController from './app/controllers/UserController.js';
 import SessionController from './app/controllers/SessionController.js';
 import AccountController from './app/controllers/AccountController.js';
 import TransactionController from './app/controllers/TransactionController.js';
+import InvoicesController from './app/controllers/InvoicesController.js';
 
 const routes = new Router();
 
@@ -75,5 +76,22 @@ routes.put('/accounts/:id', AccountController.update);
 routes.delete('/accounts/:id', AccountController.delete);
 // Não precisa de JSON
 // Basta fazer DELETE em /accounts/ID_DA_CONTA
+
+
+// Faturas
+routes.post("/invoices", InvoicesController.store);
+// Criar uma nova fatura
+// POST /invoices
+// JSON esperado:
+/*
+{
+  "status": "Em aberto",       // Pode ser: "Vencida", "Paga" ou "Em aberto"
+  "amount": 150.75,            // Valor positivo da fatura
+  "description": "Conta de luz referente a maio", // Opcional
+  "due_date": "2025-06-20"    // Data de vencimento no formato ISO (YYYY-MM-DD)
+}
+*/
+
+routes.get("/invoices", InvoicesController.index);
 
 export default routes;

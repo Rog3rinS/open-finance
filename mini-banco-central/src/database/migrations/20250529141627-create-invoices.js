@@ -1,6 +1,5 @@
 'use strict';
 
-/** @type {import('sequelize-cli').Migration} */
 module.exports = {
   async up(queryInterface, Sequelize) {
     await queryInterface.createTable('invoices', {
@@ -33,7 +32,7 @@ module.exports = {
         type: Sequelize.DATE,
         allowNull: false,
       },
-      cnpj: {
+      institution_cnpj: {                // renomeado
         type: Sequelize.STRING,
         references: { model: 'banks', key: 'cnpj' },
         allowNull: true,
