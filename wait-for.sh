@@ -11,5 +11,9 @@ while ! nc -z $HOST $PORT; do
   sleep 1
 done
 
-echo "$HOST:$PORT está disponível. Iniciando comando: $@"
+echo "$HOST:$PORT está disponível. Rodando migrations..."
+
+npx sequelize db:migrate
+
+echo "Migrations finalizadas. Iniciando comando: $@"
 exec "$@"
