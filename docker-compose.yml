@@ -29,7 +29,8 @@ services:
       DB_NAME: api_minibc_db
     volumes:
       - ./wait-for.sh:/wait-for.sh
-    entrypoint: ["/wait-for.sh", "db:5432", "npm", "start"]
+      - ./start.sh:/start.sh
+    entrypoint: ["sh", "/start.sh"]
 
   bancocentral:
     build: ./BancoCentral
@@ -47,7 +48,8 @@ services:
       DB_NAME: bancocentral_db
     volumes:
       - ./wait-for.sh:/wait-for.sh
-    entrypoint: ["/wait-for.sh", "db:5432", "npm", "start"]
+      - ./start.sh:/start.sh
+    entrypoint: ["sh", "/start.sh"]
 
   bank-account-api:
     build: ./bank-account-api
@@ -65,7 +67,8 @@ services:
       DB_NAME: bank_account_db
     volumes:
       - ./wait-for.sh:/wait-for.sh
-    entrypoint: ["/wait-for.sh", "db:5432", "npm", "start"]
+      - ./start.sh:/start.sh
+    entrypoint: ["sh", "/start.sh"]
 
   mini-banco-central:
     build: ./mini-banco-central/
@@ -83,7 +86,8 @@ services:
       DB_NAME: mini_banco_central_db
     volumes:
       - ./wait-for.sh:/wait-for.sh
-    entrypoint: ["/wait-for.sh", "db:5432", "npm", "start"]
+      - ./start.sh:/start.sh
+    entrypoint: ["sh", "/start.sh"]
 
 networks:
   default:
