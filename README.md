@@ -115,8 +115,8 @@ docker compose logs -f <nome-do-servico>
 **Atualizar nome e email:**
 ```json
 {
-  "name": "Eduardo Kroth Silva",
-  "email": "eduardo.silva@kroth.com"
+  "name": "Seu nome atualizado",
+  "email": "Seu-email-atualizado@gmail.com"
 }
 ```
 
